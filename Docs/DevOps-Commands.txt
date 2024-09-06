@@ -1,0 +1,350 @@
+$ sudo -i
+# apt-get update
+https://get.docker.com/
+# curl -fsSL https://get.docker.com -o install-docker.sh
+# sh install-docker.sh
+# docker images
+# docker ps
+# docker ps -a
+
+# docker run --name myc1 -d -p 8081:80 nginx
+# docker images
+# docker ps
+# docker ps -a
+# docker run --name myc3 -d -p 8082:8080 jenkins:2.60.3
+# docker run --name myc4 -d -p 8083:8080 maha4iac/mahalogin:1
+
+# docker images
+# docker ps -a
+# docker run --name myc1 -d nginx
+# docker run -- name myc2 -d nginx
+# docker rm <container name /id > -f
+we should not force to delete so stop the container
+# docker rmi <image name/ id>
+
+# docker run --name myc1 -d nginx
+# docker run --name myc2 -d nginx
+# docker run --name myc3 -d jenkins:2.60.3
+# docker images -q
+# docker ps -a -q
+# docker rm $(docker ps -a -q) -f
+# docker rmi $(docker images -q)
+# docker search <image name>
+# docker pull <image name>
+
+Docker run = search image + pull images + create container
+
+docker --name is must(other wise docker engine will assign) and unique.
+docker start myc1
+docker stop myc1
+docker stop $(docker ps -q)
+docker start $(docker ps -a -q)
+
+docker run --name myc1 -d --restart always nginx
+docker inspect myc1
+
+"RestartPolicy": {
+                "Name": "always",
+                "MaximumRetryCount": 0
+            },
+			
+https://us06web.zoom.us/j/87144511678?pwd=z9lAcm3XkJP29zpp4C4ggOvgR7Rr4f.1			
+
+cd /var/lib/docker/image/overlay2/imagedb/content/sha256
+
+# vi Dockerfile
+FROM ubuntu:22.04
+MAINTAINER maha@gmail.com
+RUN apt-get update
+RUN apt-get install apache2 -y
+ENTRYPOINT [“echo”]
+CMD [“this is my first container”]
+:wq!
+
+#docker build -t myimage:1 .
+docker run myimage:1
+
+service docker status
+
+apt-get install apache2 -y
+
+service apache2 status
+service tomcat status
+service apache2 stop
+service apache2 status
+service apache2 start
+service tomcat start (background)
+or
+catalina.sh run (foreground)
+
+wget https://my-docker-bucket31082024.s3.amazonaws.com/mahaLogin.war
+
+FROM tomcat:8.5.37-jre8
+MAINTAINER praveen2cheer@gmail.com
+COPY mahaLogin.war /usr/local/tomcat/webapps
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
+
+docker build -t myjavaapp:1 .
+
+docker run --name myc1 -d -p 8081:8080 myjavaapp:1
+
+
+docker login
+============
+praveen2cheer@gmail.com
+Prvncom123
+
+docker login
+
+docker tag myjavaapp:1 praveen2cheer/myjavaapp310824
+docker push praveen2cheer/myjavaapp310824
+docker push praveen2cheer/myjavaapp310824:1
+docker exec -it myc1 /bin/bash
+
+docker run --name myc1 -d -p 8081:8080 -v /myvolume myjavaapp:1
+
+docker volume ls
+docker exec -it myc1 /bin/bash
+
+df -h
+docker inspect myc1
+/var/lib/docker/volumes/c6327b7d1322330b28d848a15ee33db613e969b017e6379e1f6446df4249fd83/_data
+
+sep 2,2024
+==========
+mkdir /home/ubuntu/mydockervolume
+persistance storage volume
+
+docker run --name myc1 -v /home/ubuntu/mydockervolume:/myvolume -d -p 8081:8080 myjavaapp:1
+
+docker exec -it myc1 /bin/bash
+cd /myvolume
+
+touch myc1file
+exit
+
+docker run --name myc2 -v /home/ubuntu/mydockervolume:/myvolume -d -p 8082:8080 myjavaapp:1
+
+docker exec -it myc1 /bin/bash
+cd /myvolume
+touch myc2file
+exit
+ls
+
+docker run --name myc3 -v /home/ubuntu/mydockervolume:/myvolume -d -p 8083:8080 myjavaapp:1
+
+cd /myvolume
+ls
+touch myc3file
+
+Networking
+==========
+
+172.17.0.2 myc1
+172.17.0.3 myc2
+172.17.0.4 myc3
+
+docker network ls
+with ip we can establish communication b/w 2 containers inside host machine
+
+docker exec -it myc1 /bin/bash
+ping 172.17.0.3
+ping 172.17.0.4
+
+communication with names not possible
+ping myc2
+
+with help of bridge diver we can establish network between two containers
+
+docker network
+
+docker network create -d bridge --subnet 192.168.0.0/24 praveennetwork
+
+docker network ls
+
+docker run --name myc1 --network praveennetwork myjavaapp:1
+
+docker run --name myc2 --network praveennetwork myjavaapp:1
+docker exec -it myc1 /bin/bash 
+ping myc2
+
+Dokcer control groups
+=====================
+docker stats
+RAM, swap memory
+
+vi /etc/default/grub
+"cgroup_enable=memory swapcount=1"
+GRUB_CMDLINE_LINUX="cgroup_enable=memory swapcount=1"
+sudo update-grub
+sudo reboot
+we have to execute above commands firts
+
+docker run --name myc1 -m 300m myjavaapp:1
+docker run --name myc2 -m 300m --memory-swap 400m myjavaapp:1
+
+docker run --name myc3 -m 300m --memory-swap 400m --memory-reservation 200m myjavaapp:1
+docker stats
+
+docker run --name myc1 -m 300m --memory-swap 400m --memory-reservation 200m --cpus=.5 myjavaapp:1
+
+GUI
+---
+docker run -d -p 9000:9000 --restart always -v /var/run/docker.sock:/var/run/docker.sock -v /opt/portainer:/data portainer/portainer
+
+admin
+Prvncom12345
+
+docker run command make like file format
+docker compose
+https://github.com/maha4dsvc/mydockerCompose
+
+sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+
+docker-compose version
+
+docker-compose.yml
+------------------
+version: '3'
+services:
+   db:
+     image: mysql:5.7.22
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: test
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - 8080:80
+     restart: always
+
+docker-compose up -d
+
+http://ec2-184-72-150-217.compute-1.amazonaws.com:8080/wp-admin/setup-config.php
+issue with docker container is scalability
+high availability is not possible
+after deleting docker host we can't maintain the containers
+we can achieve above with K8S
+Kubernates
+==========
+it is extension of docker, not new tool
+we can easily deploy applications with K8S
+in K8S we are going to create cluster master and nodes
+
+in K8S cluster, master is incharge, actual work done by nodes
+
+what we want we write in manfest file, upload in the master, after master takes the decision, based on decision containers are created on nodes 
+we configure masters and nodes
+
+K8S creates containers, deletes containers, manages containers
+
+master has four components
+1)api server
+2)controllers
+3)cluster storage
+4)Schedulers  
+
+api server: it's authorized, decision maker 
+it watches api server and assigns work to the nodes.
+controllers: monitor each and every action and it updates in cluster storage
+cluster storage: as memory
+master info, node info, container information etc..
+stores in cluster storage as key value pairs
+Schedulers: assigns work to the nodes
+
+in the node we have kublet,container engine, key proxy
+
+172-31-16-235 node2
+
+
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+Master
+======
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+Nodes
+=====
+kubeadm join 172.31.29.186:6443 --token k52tq0.xbobhidvl8sudqhx \
+        --discovery-token-ca-cert-hash sha256:f50b9bc1e9940e8606ac794d2a7580ad4ed355d6991aa533bfba5923a1055cd0
+
+
+
+kubectl get nodes
+kubectl get pods
+kubectl create -f mypod.yml
+kubectl get pods
+
+kubectl get pods -o wide
+
+kubectl describe pods 
+kubectl delete pod/podname
+
+Execute the following commands
+●kubectl get nodes
+●kubectl create -f pod.yml
+●kubectl get pods
+●kubectl describe pods
+●kubectl get pods -o wide
+●kubectl get pods/hello-pod
+●kubectl get pods --all-namespaces
+●kubectl delete pods/hello-pod
+
+k8s configure cluster dock
+
+git login
+praveen.shanigarapu@gmail
+Abc@com1
+https://github.com/praveenshanigarapu1/DevOps
+git token
+=========
+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
+
+git config --global user.name "praveenshanigarapu1"
+git config --global user.email "praveen.shanigarapu@gmail"
+
+git remote add origin https://github.com/praveenshanigarapu1/DevOps
+git clone https://github.com/praveenshanigarapu1/DevOps
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:praveenshanigarapu1/DevOps.git
+git push -u origin main
+
+git push -u origin https://github.com/praveenshanigarapu1/DevOps
+
+
+
+
+
+
+
+
+
+
+
+Q.what communication we can do between containers
+FROM tomcat:8.5.37-jre8
+Q.what if we want to specify diff jre version
+what base images we have to choose.
+Q.How to implement Load Balencing
+
+not the ball, we have to control the motion of a ball.
+we have to use the motion of a the ball, instead of stopping its motion.
+
+
+
