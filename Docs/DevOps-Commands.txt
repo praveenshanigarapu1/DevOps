@@ -304,6 +304,15 @@ Execute the following commands
 
 k8s configure cluster dock
 
+Execute following RC commands
+kubectl create -f rc.yml
+kubectl get rc -o wide
+kubectl describe rc
+kubectl apply -f rc.yml
+kubectl get rc
+kubectl get pods
+Kubectl delete rc/rcname
+
 git login
 praveen.shanigarapu@gmail
 Abc@com1
