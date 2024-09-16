@@ -335,7 +335,7 @@ git push -u origin main
 git push -u origin https://github.com/praveenshanigarapu1/DevOps
 
 docker build -t myjavaapp:1 .
-docker tag myjavaapp:1 praveen2cheer/myjavaapp-16-09-2024
+docker tag myjavaapp:1 praveen2cheer/myjavaapp-16-09-2024:1
 docker login
 praveen2cheer@gmail.com
 Prvncom123
@@ -351,6 +351,9 @@ kubectl get pods
 kubectl create -f mySVCDeploy.yml 
 kubectl get svc
 kubectl get ep
+
+kubectl delete deploy/myjavaapp-deploy
+
 
 
 
