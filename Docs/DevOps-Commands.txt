@@ -353,6 +353,9 @@ kubectl get svc
 kubectl get ep
 
 kubectl delete deploy/myjavaapp-deploy
+kubectl delete svc/myjavaapp-svc
+
+docker run --name myc1 -d -p 8081:8080 praveen2cheer/myjavaapp-16-09-2024:1
 
 
 
