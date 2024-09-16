@@ -334,6 +334,13 @@ git push -u origin main
 
 git push -u origin https://github.com/praveenshanigarapu1/DevOps
 
+docker build -t myjavaapp:1 .
+
+docker login
+praveen2cheer@gmail.com
+Prvncom123
+
+
 
 
 
